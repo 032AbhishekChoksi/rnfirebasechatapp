@@ -7,13 +7,17 @@ import {
   FlatList,
   Dimensions,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../components/Loader';
+import {useNavigation} from '@react-navigation/native';
+let userId = '';
 
 // create a component
 const Users = () => {
+  const navigation = useNavigation();
   const [visible, setVisible] = useState(false);
   const [users, setUsers] = useState([]);
 
@@ -25,6 +29,7 @@ const Users = () => {
     setVisible(true);
     let tempData = [];
     const email = await AsyncStorage.getItem('EMAIL');
+    userId = await AsyncStorage.getItem('USERID');
 
     firestore()
       .collection('users')
@@ -52,13 +57,17 @@ const Users = () => {
         data={users}
         renderItem={({item, index}) => {
           return (
-            <View style={styles.userItem}>
+            <TouchableOpacity
+              style={styles.userItem}
+              onPress={() => {
+                navigation.navigate('Chat', {data: item, id: userId});
+              }}>
               <Image
                 source={require('../images/user.png')}
                 style={styles.userIcon}
               />
               <Text style={styles.userName}>{item.name}</Text>
-            </View>
+            </TouchableOpacity>
           );
         }}
       />
