@@ -1,17 +1,30 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 //import liraries
 import React, {useEffect, useState, useCallback} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {useRoute} from '@react-navigation/native';
+import {useRoute, useIsFocused} from '@react-navigation/native';
 import {GiftedChat} from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../components/Loader';
 
 // create a component
 const Chat = () => {
   const route = useRoute();
+  const isFocued = useIsFocused();
   const [visible, setVisible] = useState(false);
+  const [mode, setMode] = useState('LIGHT');
   const [messageList, setMessageList] = useState([]);
+
+  useEffect(() => {
+    getMode();
+  }, [isFocued]);
+
+  const getMode = async () => {
+    setMode(await AsyncStorage.getItem('MODE'));
+  };
+
   useEffect(() => {
     setVisible(true);
     const subscriber = firestore()
@@ -55,7 +68,11 @@ const Chat = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {backgroundColor: mode === 'LIGHT' ? 'white' : '#212121'},
+      ]}>
       <GiftedChat
         messages={messageList}
         onSend={messages => onSend(messages)}
@@ -72,6 +89,7 @@ const Chat = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#212121',
   },
 });
 

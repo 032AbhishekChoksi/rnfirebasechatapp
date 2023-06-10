@@ -8,6 +8,7 @@ import Setting from '../tabs/Setting';
 // create a component
 const Main = () => {
   const [selectedTab, setSelectedTab] = useState(0);
+
   return (
     <View style={styles.container}>
       {selectedTab === 0 ? <Users /> : selectedTab === 1 ? <Setting /> : null}

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 //import liraries
 import React, {useEffect, useState} from 'react';
 import {
@@ -12,14 +13,24 @@ import {
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loader from '../components/Loader';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 let userId = '';
 
 // create a component
 const Users = () => {
   const navigation = useNavigation();
+  const isFocued = useIsFocused();
   const [visible, setVisible] = useState(false);
+  const [mode, setMode] = useState('LIGHT');
   const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    getMode();
+  }, [isFocued]);
+
+  const getMode = async () => {
+    setMode(await AsyncStorage.getItem('MODE'));
+  };
 
   useEffect(() => {
     getUsers();
@@ -49,7 +60,11 @@ const Users = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {backgroundColor: mode === 'LIGHT' ? 'white' : '#212121'},
+      ]}>
       <View style={styles.header}>
         <Text style={styles.title}>RN Firebase Chat App</Text>
       </View>
@@ -58,7 +73,7 @@ const Users = () => {
         renderItem={({item, index}) => {
           return (
             <TouchableOpacity
-              style={styles.userItem}
+              style={[styles.userItem, {backgroundColor: 'white'}]}
               onPress={() => {
                 navigation.navigate('Chat', {data: item, id: userId});
               }}>
